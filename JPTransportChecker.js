@@ -1,5 +1,4 @@
 var time = {};
-var late = false;
 
 
 // SETTINGS ==================================================
@@ -37,9 +36,10 @@ var go_to_mobile_site = false;      // Set 'true' if you want to go to mobile pa
 
 // END OF SETTING ========================================================
 
-
+var late = false;
 var jorudan = 'http://eki.jorudan.co.jp/unk/live.html';
 var mobile_site = 'http://live-j.jp';
+var interval = 60000 * time.interval;
 
 var message = {};
 message.check_ok = '異常無し';
@@ -49,22 +49,6 @@ message.base_notification = '交通情報';
 
 var notification = device.notifications.createNotification(message.base_notification);
 
-var getDateObject = function(unixtime){
-    var d = new Date();
-    return d.setTime(unixtime);
-};
-
-var days_list = [
-    check_days.sun,
-    check_days.mon,
-    check_days.tue,
-    check_days.wed,
-    check_days.thu,
-    check_days.fri,
-    check_days.sat
-];
-
-var interval = 60000 * time.interval;
 var now = new Date();
 var year = now.getFullYear();
 var month = now.getMonth();
@@ -73,6 +57,7 @@ var day = now.getDate();
 var timeStart = new Date(year, month, day, time.start_hour, time.start_minute);
 var timeEnd = new Date(year, month, day, time.end_hour, time.end_minute);
 var timeSnooze = interval+timeStart.getTime();
+
 
 var check = function(){
     var arr = transport_name.split(',');
@@ -115,7 +100,6 @@ var check = function(){
         );
     },
     function onError(textStatus, response){
-
         var error = textStatus +' (' +response.status +')';
         notification.content = message.base_notification +message.unknown_error.replace('%s', error);
         notification.show();
@@ -124,6 +108,16 @@ var check = function(){
 
 var is_valid_day = function(){
     var today = new Date();
+    var days_list = [
+        check_days.sun,
+        check_days.mon,
+        check_days.tue,
+        check_days.wed,
+        check_days.thu,
+        check_days.fri,
+        check_days.sat
+    ];
+
     return days_list[today.getDay()];
 };
 
